@@ -1,0 +1,103 @@
+﻿<Window x:Class="VisualizzatoreGrafi.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:graphsharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
+        xmlns:local="clr-namespace:VisualizzatoreGrafi"
+        xmlns:zoom="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"        
+        Title="VisualizzatoreGrafi" Height="350" Width="525">
+    <Window.Resources>
+        <local:ColorConverter x:Key="ColorConverter"/>
+
+
+        <DataTemplate x:Key="demoTemplate" DataType="{x:Type local:PocVertex}">
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <TextBlock Text="{Binding Path=ID, Mode=OneWay}" FontWeight="Bold" Foreground="{Binding Path=Color, Mode=OneWay, Converter={StaticResource ColorConverter}}" >
+                </TextBlock>
+
+            </StackPanel>
+        </DataTemplate>
+
+        <Style TargetType="{x:Type graphsharp:VertexControl}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type graphsharp:VertexControl}">
+                        <Border>
+
+                            <ContentPresenter Content="{TemplateBinding Vertex}" 
+                                            ContentTemplate="{StaticResource demoTemplate}"/>
+
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+       <Style TargetType="{x:Type graphsharp:EdgeControl}">
+            <Style.Resources>
+                <ToolTip x:Key="ToolTipContent">
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" Text="Edge Information"/>
+                        <TextBlock Text="{Binding ID}"/>
+                    </StackPanel>
+                </ToolTip>
+            </Style.Resources>
+            
+            <Style.Setters>
+                <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource Self},Path=Edge.EdgeColor,Converter={StaticResource ColorConverter}}"/>
+                <Setter Property="ToolTip" Value="{StaticResource ToolTipContent}"/>
+            </Style.Setters>
+        </Style>
+
+
+    
+        
+        
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <StackPanel Orientation="Vertical" Grid.Row="0" >
+            <StackPanel Orientation="Horizontal" 
+                        HorizontalAlignment="Stretch" Margin="0">
+                <Button  Margin="4" Click="Button_Click" Padding="4">Apri</Button>
+                <TextBlock  Margin="4" VerticalAlignment="Center">Posizioni:</TextBlock>
+                <TextBox Width="100" Margin="4" TextChanged="HandlePosizioniChanged"></TextBox>
+                
+                
+                <Label VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0"  
+                        Content="Pick Layout Type"/>
+                <ComboBox ItemsSource="{Binding LayoutAlgorithmTypes}"
+                          SelectedItem="{Binding Path=LayoutAlgorithmType, Mode=TwoWay}"
+                          Width="150" Height="25" Margin="5" />
+                
+            </StackPanel>
+
+
+        </StackPanel>
+
+
+
+        <zoom:ZoomControl  Grid.Row="1"  Zoom="0.2" ZoomBoxOpacity="0.5" >
+
+
+
+            <local:PocGraphLayout x:Name="graphLayout" Margin="10"
+						Graph="{Binding Path=Graph}"
+						LayoutAlgorithmType="{Binding Path=LayoutAlgorithmType, Mode=OneWay}"
+						OverlapRemovalAlgorithmType="FSA"
+                        AnimationLength="0"
+						HighlightAlgorithmType="Simple" />
+        </zoom:ZoomControl>
+
+    </Grid>
+
+
+
+
+</Window>
